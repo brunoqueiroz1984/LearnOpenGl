@@ -3,6 +3,9 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <Shader_s.h>
 
@@ -146,8 +149,10 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue = glfwGetTime();
-        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        ourShader.setMatrix4f("transform", glm::value_ptr(trans));
 
         // draw our first triangle
         glActiveTexture(GL_TEXTURE0);
@@ -203,4 +208,4 @@ void processInput(GLFWwindow* window)
     }
 }
 
-// next class -> Textures : EX3
+// next class -> Transformations : exercises
