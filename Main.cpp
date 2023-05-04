@@ -168,6 +168,14 @@ int main()
         // draw using only vertex array
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        float scaleAmount = static_cast<float>(sin(glfwGetTime()));
+        trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+        ourShader.setMatrix4f("transform", glm::value_ptr(trans));
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
