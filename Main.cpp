@@ -11,10 +11,12 @@
 
 #include <iostream>
 
+void createSpinningSquares(glm::vec3 cubePositions[], Shader ourShader);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 float mixValue = 0.2f;
+float fov = 45.0f;
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -31,7 +33,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGl", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGl", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -182,6 +184,19 @@ int main()
     ourShader.setFloat("mixRatio", mixValue);
 
 
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f,  2.0f, -2.5f),
+        glm::vec3(1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
@@ -199,7 +214,7 @@ int main()
 
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
         ourShader.setMatrix4f("model", glm::value_ptr(model));
         ourShader.setMatrix4f("view", glm::value_ptr(view));
@@ -217,7 +232,9 @@ int main()
         // draw using vertex and indices array (EBO)
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // draw using only vertex array
-         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        createSpinningSquares(cubePositions, ourShader);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -236,6 +253,23 @@ int main()
     return 0;
 }
 
+void createSpinningSquares(glm::vec3 cubePositions[], Shader ourShader)
+{
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubePositions[i]);
+        float angle = 20.0f * i;
+        if (i % 3 == 0)
+            angle = glfwGetTime() * 25.0f;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        ourShader.setMatrix4f("model", glm::value_ptr(model));
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    }
+}   
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -248,15 +282,21 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         mixValue += 0.01f;
+        fov += 0.1f;
         if (mixValue >= 1.0f)
             mixValue = 1.0f;
+        if (fov >= 120.0f)
+            fov = 120.0f;
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
         mixValue -= 0.01f;
+        fov -= 0.1f;
         if (mixValue <= 0.0f)
             mixValue = 0.0f;
+        if (fov <= 0.0f)
+            fov = 0.0f;
     }
 }
 
-// next class -> Coordinate Systems - More cubes!
+// next class -> Camera
