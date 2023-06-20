@@ -209,6 +209,7 @@ int main()
         ourShader.setMatrix4f("projection", glm::value_ptr(projection));
         ourShader.setVec3f("objectColor", glm::value_ptr(objColor));
         ourShader.setVec3f("lightColor", glm::value_ptr(lightColor));
+        ourShader.setVec3f("viewPos", glm::value_ptr(camera.Position));
 
         // draw our first triangle
         //glActiveTexture(GL_TEXTURE0);
